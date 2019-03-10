@@ -10,7 +10,6 @@ const app = express();
 const router = express.Router();
 
 // this is our MongoDB database
-const dbRoute = "mongodb+srv://admin:millionaire@quiz-59iso.mongodb.net/test?retryWrites=true";
 
 // connects our back end code with the database
 mongoose.connect(
