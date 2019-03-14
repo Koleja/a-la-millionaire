@@ -84,15 +84,18 @@ router.delete("/deleteData", (req, res) => {
 router.post("/putData", (req, res) => {
   let data = new Data();
 
-  const { id, message } = req.body;
+  const { id, question, correct_answer, wrong_answer, level } = req.body;
 
-  if ((!id && id !== 0) || !message) {
+  if ((!id && id !== 0) || !question || !correct_answer || !wrong_answer || !level) {
     return res.json({
       success: false,
       error: "INVALID INPUTS"
     });
   }
-  data.message = message;
+  data.level = level;
+  data.wrong_answer = wrong_answer;
+  data.correct_answer = correct_answer;
+  data.question = question;
   data.id = id;
   data.save(err => {
     if (err) return res.json({ success: false, error: err });

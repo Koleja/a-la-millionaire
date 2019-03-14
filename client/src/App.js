@@ -7,7 +7,10 @@ class App extends Component {
   state = {
     data: [],
     id: 0,
-    message: null,
+    question: null,
+    answer: null,
+    options: [],
+    level: null,
     intervalIsSet: false,
     idToDelete: null,
     idToUpdate: null,
@@ -49,16 +52,20 @@ class App extends Component {
 
   // our put method that uses our backend api
   // to create new query into our data base
-  putDataToDB = message => {
+  putDataToDB = (question, answer, options, level) => {
     let currentIds = this.state.data.map(data => data.id);
     let idToBeAdded = 0;
     while (currentIds.includes(idToBeAdded)) {
       ++idToBeAdded;
     }
+    options.split(',');
 
     axios.post("http://localhost:3001/api/putData", {
       id: idToBeAdded,
-      message: message
+      question: question,
+      correct_answer: answer,
+      wrong_answer: options,
+      level: level
     });
   };
 
@@ -68,10 +75,12 @@ class App extends Component {
   deleteFromDB = idTodelete => {
     let objIdToDelete = null;
     this.state.data.forEach(dat => {
-      if (dat.id == idTodelete) {
+      if (dat.id === idTodelete) {
         objIdToDelete = dat._id;
       }
     });
+
+    console.log(objIdToDelete);
 
     axios.delete("http://localhost:3001/api/deleteData", {
       data: {
@@ -86,7 +95,7 @@ class App extends Component {
   updateDB = (idToUpdate, updateToApply) => {
     let objIdToUpdate = null;
     this.state.data.forEach(dat => {
-      if (dat.id == idToUpdate) {
+      if (dat.id === idToUpdate) {
         objIdToUpdate = dat._id;
       }
     });
@@ -105,60 +114,103 @@ class App extends Component {
     const { data } = this.state;
     return (
       <div>
-        <ul>
-          {data.length <= 0
-            ? "NO DB ENTRIES YET"
-            : data.map(dat => (
-                <li style={{ padding: "10px" }} key={data.message}>
-                  <span style={{ color: "gray" }}> id: </span> {dat.id} <br />
-                  <span style={{ color: "gray" }}> data: </span>
-                  {dat.message}
-                </li>
-              ))}
-        </ul>
-        <div style={{ padding: "10px" }}>
-          <input
-            type="text"
-            onChange={e => this.setState({ message: e.target.value })}
-            placeholder="add something in the database"
-            style={{ width: "200px" }}
-          />
-          <button onClick={() => this.putDataToDB(this.state.message)}>
-            ADD
-          </button>
+        <div>
+          <h1>OBSZAR GRY</h1>
+          <ul>
+            {data.length <= 0
+              ? "NO DB ENTRIES YET"
+              : data.map(dat => (
+                  <li style={{ padding: "10px" }} key={data.question}>
+                    <p style={{ color: "gray" }}> question: {dat.question} </p>
+                    <p style={{ color: "gray" }}> good answer: {dat.correct_answer} </p>
+                    <p style={{ color: "gray" }}> incorrect answers: {dat.wrong_answer} </p>
+                    <p style={{ color: "gray" }}> level: {dat.level} </p>
+                  </li>
+                ))}
+          </ul>
         </div>
-        <div style={{ padding: "10px" }}>
-          <input
-            type="text"
-            style={{ width: "200px" }}
-            onChange={e => this.setState({ idToDelete: e.target.value })}
-            placeholder="put id of item to delete here"
-          />
-          <button onClick={() => this.deleteFromDB(this.state.idToDelete)}>
-            DELETE
-          </button>
+        
+        <div>
+          <h2>PANEL</h2>
+          <div style={{ padding: "10px" }}>
+            <h3>Adding new question</h3>
+            <input
+              type="text"
+              onChange={e => this.setState({ question: e.target.value })}
+              placeholder="add question"
+              style={{ width: "200px" }}
+            />
+            <input
+              type="text"
+              onChange={e => this.setState({ answer: e.target.value })}
+              placeholder="add correct answer"
+              style={{ width: "200px" }}
+            />
+            <input
+              type="text"
+              onChange={e => this.setState({ options: e.target.value })}
+              placeholder="add three wrong answers"
+              style={{ width: "200px" }}
+            />
+            <input
+              type="text"
+              onChange={e => this.setState({ level: e.target.value })}
+              placeholder="add level"
+              style={{ width: "200px" }}
+            />
+            <button onClick={() => this.putDataToDB(
+              this.state.question, 
+              this.state.answer, 
+              this.state.options, 
+              this.state.level)}>
+              ADD
+            </button>
+          </div>
+          <div style={{ padding: "10px" }}>
+            <h3>Delete question</h3>
+            <input
+              type="text"
+              style={{ width: "200px" }}
+              onChange={e => this.setState({ idToDelete: e.target.value })}
+              placeholder="put id of item to delete here"
+            />
+            <select
+              onChange={e => this.setState({ idToDelete: e.target.value })}>
+              {data.length <= 0
+                ? "NO QUESTIONS IN DB"
+                : data.map(dat => (
+                    <option value={dat._id}> {dat.question} </option>
+                  ))}
+            </select>
+            
+            <button onClick={() => this.deleteFromDB(this.state.idToDelete)}>
+              DELETE
+            </button>
+          </div>
+          <div style={{ padding: "10px" }}>
+            <h3>Update question</h3>
+            <input
+              type="text"
+              style={{ width: "200px" }}
+              onChange={e => this.setState({ idToUpdate: e.target.value })}
+              placeholder="id of item to update here"
+            />
+            <input
+              type="text"
+              style={{ width: "200px" }}
+              onChange={e => this.setState({ updateToApply: e.target.value })}
+              placeholder="put new value of the item here"
+            />
+            <button
+              onClick={() =>
+                this.updateDB(this.state.idToUpdate, this.state.updateToApply)
+              }
+            >
+              UPDATE
+            </button>
+          </div>
         </div>
-        <div style={{ padding: "10px" }}>
-          <input
-            type="text"
-            style={{ width: "200px" }}
-            onChange={e => this.setState({ idToUpdate: e.target.value })}
-            placeholder="id of item to update here"
-          />
-          <input
-            type="text"
-            style={{ width: "200px" }}
-            onChange={e => this.setState({ updateToApply: e.target.value })}
-            placeholder="put new value of the item here"
-          />
-          <button
-            onClick={() =>
-              this.updateDB(this.state.idToUpdate, this.state.updateToApply)
-            }
-          >
-            UPDATE
-          </button>
-        </div>
+        
       </div>
     );
   }
