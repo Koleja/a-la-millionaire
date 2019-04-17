@@ -1,0 +1,12 @@
+.c-welcome {
+    background-color: $c-blue;
+    text-align: center;
+
+    &__title {
+        color: $c-white;
+    }
+    &__options {
+        color: $c-yellow;
+    }
+    
+}
