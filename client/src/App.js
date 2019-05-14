@@ -1,24 +1,29 @@
 
 import React, { Component } from "react";
 import axios from "axios";
-import './styles/App.scss'
+import './styles/App.scss';
 import Welcome from './components/Welcome';
+import Game from './components/Game';
+import Panel from './components/Panel';
 
 class App extends Component {
-  // initialize our state 
-  state = {
-    data: [],
-    id: 0,
-    question: null,
-    answer: null,
-    options: [],
-    level: null,
-    intervalIsSet: false,
-    idToDelete: null,
-    idToUpdate: null,
-    objectToUpdate: null,
-    view: ''
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: [],
+      id: 0,
+      question: null,
+      answer: null,
+      options: [],
+      level: null,
+      intervalIsSet: false,
+      
+      objectToUpdate: null,
+      view: '',
+      needUpdate: '',
+    };
+  }
+  
 
   // when component mounts, first thing it does is fetch all existing data in our db
   // then we incorporate a polling logic so that we can easily see if our db has 
@@ -53,6 +58,17 @@ class App extends Component {
       .then(res => this.setState({ data: res.data }));
   };
 
+  getAgain = v => {
+    
+    console.log(v);
+    this.setState({
+      needUpdate: v
+    })
+
+    if (this.state.needUpdate) { this.getDataFromDb(); }
+    
+  }
+
   // our put method that uses our backend api
   // to create new query into our data base
   putDataToDB = (question, answer, options, level) => {
@@ -72,18 +88,19 @@ class App extends Component {
     });
   };
 
-
   // our delete method that uses our backend api 
   // to remove existing database information
   deleteFromDB = idTodelete => {
-    let objIdToDelete = null;
+    /* let objIdToDelete = null;
     this.state.data.forEach(dat => {
       if (dat.id === idTodelete) {
         objIdToDelete = dat._id;
       }
-    });
+    }); */
 
-    console.log(objIdToDelete);
+    let objIdToDelete = idTodelete;
+
+    console.log('to delete: '+objIdToDelete);
 
     axios.delete("http://localhost:3001/api/deleteData", {
       data: {
@@ -91,7 +108,6 @@ class App extends Component {
       }
     });
   };
-
 
   // our update method that uses our backend api
   // to overwrite existing data base information
@@ -126,7 +142,6 @@ class App extends Component {
   // it is easy to understand their functions when you 
   // see them render into our screen
   render() {
-    const { data } = this.state;
     return (
       <div>
 
@@ -134,26 +149,13 @@ class App extends Component {
 
         {
           this.state.view === 'game' &&
-          <div>
-            <h1>GAME AREA</h1>
-            <ul>
-              {data.length <= 0
-                ? "NO DB ENTRIES YET"
-                : data.map(dat => (
-                    <li style={{ padding: "10px" }} key={data.question}>
-                      <p style={{ color: "gray" }}> question: {dat.question} </p>
-                      <p style={{ color: "gray" }}> good answer: {dat.correct_answer} </p>
-                      <p style={{ color: "gray" }}> incorrect answers: {dat.wrong_answer} </p>
-                      <p style={{ color: "gray" }}> level: {dat.level} </p>
-                    </li>
-                  ))}
-            </ul>
-          </div>
+          <Game data={this.state.data} refresh={ (v) => this.getAgain(v) }/>
         }
 
         {
           this.state.view === 'panel' &&
-          <div>
+          <Panel data={this.state.data}/>
+          /* <div>
             <h2>PANEL</h2>
             <form style={{ padding: "10px" }}>
               <h3>Adding new question</h3>
@@ -201,7 +203,7 @@ class App extends Component {
               <select
                 style={{ width: "200px" }}
                 id="selectQtoDelete"
-                onChange={e => this.setState({ idToDelete: e.target.value })}>
+                onChange={ (e) => this.getSelectedOption(e.target.value) }>
                 {data.length <= 0
                   ? "NO QUESTIONS IN DB"
                   : data.map(dat => (
@@ -235,7 +237,7 @@ class App extends Component {
                 UPDATE
               </button>
             </div>
-          </div>
+          </div> */
         }
 
       </div>
