@@ -24,7 +24,7 @@ export default class Game extends Component {
                 {this.state.gameData.length <= 0
                   ? "NO DB ENTRIES YET"
                   : this.state.gameData.map(dat => (
-                    <li style={{ padding: "10px" }} key={dat.id}>
+                    <li style={{ padding: "10px" }} key={dat._id}>
                     <p style={{ color: "gray" }}> question: {dat.question} </p>
                     <p style={{ color: "gray" }}> good answer: {dat.correct_answer} </p>
                     <p style={{ color: "gray" }}> incorrect answers: {dat.wrong_answer} </p>

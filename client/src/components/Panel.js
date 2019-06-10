@@ -8,7 +8,6 @@ export default class Panel extends Component {
       gameData: [],
       idToDelete: null,
       idToUpdate: null,
-      needUpdate: '',
     }
   }
 
@@ -16,16 +15,6 @@ export default class Panel extends Component {
     this.setState({
       gameData: this.props.data,
     })
-  }
-
-  sendUpdate() {
-    this.setState({
-      needUpdate: true
-    })
-
-    console.log('needupdate: '+this.state.needUpdate)
-    this.props.refresh(this.state.needUpdate)
-    
   }
 
   putDataToDB = (question, answer, options, level) => {
@@ -43,6 +32,8 @@ export default class Panel extends Component {
       wrong_answer: options,
       level: level
     });
+
+    this.sendUpdate();
   };
 
   updateDB = (idToUpdate, updateToApply) => {
@@ -67,14 +58,14 @@ export default class Panel extends Component {
   }
 
   deleteFromDB = idTodelete => {
-    /* let objIdToDelete = null;
-    this.state.data.forEach(dat => {
-      if (dat.id === idTodelete) {
+    let objIdToDelete = null;
+    this.state.gameData.forEach(dat => {
+      if (dat._id === idTodelete) {
         objIdToDelete = dat._id;
       }
-    }); */
+    });
 
-    let objIdToDelete = idTodelete;
+    /* et objIdToDelete = idTodelete; */
 
     console.log('to delete: '+objIdToDelete);
 
@@ -82,13 +73,18 @@ export default class Panel extends Component {
       data: {
         id: objIdToDelete
       }
-    });
-
-    this.sendUpdate();
+    }); 
   };
 
   sendForm = e => {
     e.preventDefault();
+
+    //clearing inputs values
+    const el = document.querySelectorAll('input');
+    [...el].forEach(element => {
+      element.value = null;
+    });
+
   }
 
   render() {

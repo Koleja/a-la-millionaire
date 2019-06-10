@@ -56,18 +56,9 @@ class App extends Component {
     fetch('http://localhost:3001/api/getData')
       .then(data => data.json())
       .then(res => this.setState({ data: res.data }));
+
+      console.log('zbiera dane z db');
   };
-
-  getAgain = v => {
-    
-    console.log(v);
-    this.setState({
-      needUpdate: v
-    })
-
-    if (this.state.needUpdate) { this.getDataFromDb(); }
-    
-  }
 
   // our put method that uses our backend api
   // to create new query into our data base
@@ -136,6 +127,7 @@ class App extends Component {
     this.setState({
       view: a
     })
+    this.getDataFromDb();
   }
 
   // here is our UI
@@ -145,16 +137,16 @@ class App extends Component {
     return (
       <div>
 
-        <Welcome view={ (a) => this.onPickedView(a) }/>
+          <Welcome view={ (a) => this.onPickedView(a) }/>
 
         {
           this.state.view === 'game' &&
-          <Game data={this.state.data} refresh={ (v) => this.getAgain(v) }/>
+          <Game data={this.state.data}/>
         }
 
         {
           this.state.view === 'panel' &&
-          <Panel data={this.state.data}/>
+          <Panel data={this.state.data} />
           /* <div>
             <h2>PANEL</h2>
             <form style={{ padding: "10px" }}>

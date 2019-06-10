@@ -8,5 +8,25 @@
     &__options {
         color: $c-yellow;
     }
-    
+    &__btn {
+        padding: 2em;
+        border: 2px solid $c-yellow;
+        border-radius: 5%;
+        box-shadow: 0px 0px 10px 5px $c-yellow;
+    }
+
+    &.sidebar {
+        position: fixed;
+        width: 100%;
+
+        .c-welcome {
+            &__container {
+                flex-direction: row;
+            }
+            &__btn {
+                padding: 1em;
+                color: $c-yellow;
+            }
+        }
+    }
 }
