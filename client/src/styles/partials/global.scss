@@ -1,0 +1,19 @@
+body, html {
+    padding: 0;
+    margin: 0;
+}
+
+.container {
+    height: 100vh;
+    width: 100vw;
+    padding: 10vw;
+    box-sizing: border-box;
+}
+
+.area {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+}

@@ -7,7 +7,10 @@ const Schema = mongoose.Schema;
 const DataSchema = new Schema(
   {
     id: Number,
-    message: String
+    question: String,
+    correct_answer: String,
+    wrong_answer: String,
+    level: String,
   },
   { timestamps: true }
 );
