@@ -8,6 +8,9 @@ export default class Panel extends Component {
       gameData: [],
       idToDelete: null,
       idToUpdate: null,
+      qAdded: false,
+      qDeleted: false,
+      qUpdated: false,
     }
   }
 
@@ -18,6 +21,7 @@ export default class Panel extends Component {
   }
 
   putDataToDB = (question, answer, options, level) => {
+    const self = this;
     let currentIds = this.state.gameData.map(data => data.id);
     let idToBeAdded = 0;
     while (currentIds.includes(idToBeAdded)) {
@@ -31,12 +35,16 @@ export default class Panel extends Component {
       correct_answer: answer,
       wrong_answer: options,
       level: level
+    })
+    .then(response => {
+      self.setState({
+        qAdded: true,
+      })
     });
-
-    this.sendUpdate();
   };
 
   updateDB = (idToUpdate, updateToApply) => {
+    const self = this;
     let objIdToUpdate = null;
     this.state.gameData.forEach(dat => {
       if (dat.id === idToUpdate) {
@@ -47,6 +55,11 @@ export default class Panel extends Component {
     axios.post("http://localhost:3001/api/updateData", {
       id: objIdToUpdate,
       update: { message: updateToApply }
+    })
+    .then(response => {
+      self.setState({
+        qUpdated: true,
+      })
     });
   };
 
@@ -58,6 +71,7 @@ export default class Panel extends Component {
   }
 
   deleteFromDB = idTodelete => {
+    const self = this;
     let objIdToDelete = null;
     this.state.gameData.forEach(dat => {
       if (dat._id === idTodelete) {
@@ -73,6 +87,11 @@ export default class Panel extends Component {
       data: {
         id: objIdToDelete
       }
+    })
+    .then( response => {
+      self.setState({
+        qDeleted: true,
+      })
     }); 
   };
 
@@ -96,24 +115,28 @@ export default class Panel extends Component {
             <h3>Adding new question</h3>
             <input
               type="text"
+              onFocus={() => this.setState({ qAdded: false })}
               onChange={e => this.setState({ question: e.target.value })}
               placeholder="add question"
               style={{ width: "200px" }}
             />
             <input
               type="text"
+              onFocus={() => this.setState({ qAdded: false })}
               onChange={e => this.setState({ answer: e.target.value })}
               placeholder="add correct answer"
               style={{ width: "200px" }}
             />
             <input
               type="text"
+              onFocus={() => this.setState({ qAdded: false })}
               onChange={e => this.setState({ options: e.target.value })}
               placeholder="add three wrong answers"
               style={{ width: "200px" }}
             />
             <input
               type="text"
+              onFocus={() => this.setState({ qAdded: false })}
               onChange={e => this.setState({ level: e.target.value })}
               placeholder="add level"
               style={{ width: "200px" }}
@@ -125,7 +148,12 @@ export default class Panel extends Component {
               this.state.level)}>
               ADD
             </button>
+            {
+              this.state.qAdded &&
+              <p>Question added successfully!</p>
+            }
           </form>
+
           <div style={{ padding: "10px" }}>
             <h3>Delete question</h3>
             <input
@@ -149,7 +177,12 @@ export default class Panel extends Component {
             <button onClick={() => this.deleteFromDB(this.state.idToDelete)}>
               DELETE
             </button>
+            {
+              this.state.qDeleted &&
+              <p>Question deleted successfully!</p>
+            }
           </div>
+          
           <div style={{ padding: "10px" }}>
             <h3>Update question</h3>
             <input
@@ -158,19 +191,55 @@ export default class Panel extends Component {
               onChange={e => this.setState({ idToUpdate: e.target.value })}
               placeholder="id of item to update here"
             />
+            <select
+              style={{ width: "200px" }}
+              id="selectQtoDelete"
+              onChange={e => this.setState({ idToUpdate: e.target.value })}>
+              {this.state.gameData.length <= 0
+                ? "NO QUESTIONS IN DB"
+                : this.state.gameData.map(dat => (
+                    <option value={dat._id} key={dat._id}> {dat.question} </option>
+                  ))}
+            </select>
             <input
               type="text"
               style={{ width: "200px" }}
-              onChange={e => this.setState({ updateToApply: e.target.value })}
-              placeholder="put new value of the item here"
+              onChange={e => this.setState({ newQuestion: e.target.value })}
+              placeholder="put new content of the question"
+            />
+            <input
+              type="text"
+              style={{ width: "200px" }}
+              onChange={e => this.setState({ newAnswer: e.target.value })}
+              placeholder="put new correct answer"
+            />
+            <input
+              type="text"
+              style={{ width: "200px" }}
+              onChange={e => this.setState({ newOptions: e.target.value })}
+              placeholder="put new incorrect answers"
+            />
+            <input
+              type="text"
+              style={{ width: "200px" }}
+              onChange={e => this.setState({ newLevel: e.target.value })}
+              placeholder="put new level"
             />
             <button
               onClick={() =>
-                this.updateDB(this.state.idToUpdate, this.state.updateToApply)
-              }
-            >
+                this.updateDB(
+                  this.state.idToUpdate, 
+                  this.state.newQuestion, 
+                  this.state.newAnswer, 
+                  this.state.newOptions, 
+                  this.state.newLevel)
+              }>
               UPDATE
             </button>
+            {
+              this.state.qUpdated&&
+              <p>Question updated successfully!</p>
+            }
           </div>
         </div>
       </div>

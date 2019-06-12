@@ -32,16 +32,16 @@ export default class Welcome extends Component {
 
     render() {
         return (
-            <div className="container c-welcome sidebar">
+            <div className="container c-welcome">
                 <div className="c-welcome__container area">
                     <h1 className="c-welcome__title">Welcome to 'a la Millionaire'</h1>
 
                     {
                         this.state.pickedView === 'welcome' && 
                         <div className="c-welcome__options">
-                            <p className="c-welcome__btn" onClick={(e) => this.pickedView(e)} id="game">PLAY</p>
+                            <button className="c-welcome__btn" onClick={(e) => this.pickedView(e)} id="game">PLAY</button>
                             <p style={{color: '#ffffff'}}>or</p>
-                            <p className="c-welcome__btn  " onClick={(e) => this.pickedView(e)} id="panel">GO TO A PANEL</p>
+                            <button className="c-welcome__btn  " onClick={(e) => this.pickedView(e)} id="panel">GO TO A PANEL</button>
                         </div>
                     }
                     
